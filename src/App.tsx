@@ -54,7 +54,17 @@ function App() {
         body: JSON.stringify(payload),
       });
 
-      const json = await response.json();
+      const responseText = await response.text();
+      let json: any;
+      try {
+        json = JSON.parse(responseText);
+      } catch {
+        throw new Error(
+          response.ok
+            ? 'استجاب الخادم بتنسيق غير صالح'
+            : 'تعذر الوصول إلى خدمة الذكاء الاصطناعي. تحقق من إعدادات Vercel ثم أعد المحاولة.',
+        );
+      }
       if (!response.ok || json.success === false) {
         throw new Error(json.error || 'حدث خطأ أثناء الاتصال بالخادم');
       }
